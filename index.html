@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Groceries =P</title>  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>  
+</head>
+<body>
+<a id="change" href="#">change apple</a>
+
+<h2>Total Price: $<span>0</span></h2>
+<h3>Jade's Grocery list</h3>
+<script>
+
+  var $list = $('<ul></ul>');
+  var $total = $('h2').find('span');
+  var Total = 0;
+  var groceries = [
+      {
+        name: 'apple',
+        price : 1
+      }
+      ,
+      {
+        name: 'milk',
+        price : 3
+      }
+      ,
+      {
+        name: 'cheese',
+        price : 4
+      }
+      ,
+      {
+        name: 'eggs',
+        price : 2
+      }
+    ]
+  
+
+    // BACKBONE
+
+      // Model
+      var Grocery = Backbone.Model.extend({
+        idAttribute : 'name',
+
+        initialize: function(){
+
+          this.on('change', function(node){
+            console.log("changed!")
+          })
+
+          this.on('change:price', function(node){
+            console.log("price hike sucka!!")
+          })
+
+        }
+      })
+
+      // Collection
+      var Groceries = Backbone.Collection.extend({
+        model: Grocery,
+
+        initialize: function() {
+          console.log('collection');
+
+          this.on('remove', function(node){
+            console.log("i have been removed!!!")
+          })
+
+        }
+      
+
+      })
+
+    var blah = new Groceries(groceries);
+
+
+    var View =  Backbone.View.extend({
+
+
+      initialize : function(){
+        console.log('derp view')
+      }
+
+
+    })
+
+
+
+
+  function drawLi(grocery) {
+    //return '<li><a href="'+ grocery.url +'" class="grocery" data-type='+ grocery.name +' data-price='+ grocery.price +'>'+ grocery.name + ': $' + grocery.price + '</a></li>';
+    return '<li><a href="'+ grocery.url +'" class="grocery" data-type='+ grocery.name +'>'+ grocery.name + ': $' + grocery.price + '</a></li>';
+  }
+
+  function render() {
+    var cache = '';
+    $.each(groceries, function(i, grocery) {
+      var url = '/purchase/' +  grocery.name + '/' + grocery.price;
+      grocery.url = url;
+      cache += drawLi(grocery);
+    })
+
+    $list.html(cache);
+  }
+
+  render();
+  $list.appendTo('body');
+
+  // UI interaction
+  $('ul').on('click', 'a.grocery', function(e) {
+
+    e.preventDefault();
+
+    var $node = $(this);
+
+    var index = $(this).parent('li').index();
+    var price = groceries[index].price;
+    console.log(price)
+    //Total += $node.data('price');
+    Total += price;
+    $total.html(Total);
+
+  })
+
+  $('#change').click(function(e){
+    e.preventDefault();
+    groceries[0].name = "apples";
+    groceries[0].price = "100";
+
+    var li = drawLi(groceries[0]);
+    $('[data-type=apple]').html(li);
+    render();
+  })
+
+
+</script>
+</body>
+</html>
+
