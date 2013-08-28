@@ -137,7 +137,22 @@
   })
 
 
+  function ajaxify() {
+    $.ajax({ 
+         type:'GET', 
+         url: 'data.json', 
+         dataType:'json'
+     }).done(function(data){
+      console.log('data!')
+      console.log(data)
+     })
+  }
+
+  ajaxify()
+
 </script>
 </body>
 </html>
+
+
 
